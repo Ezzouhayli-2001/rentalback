@@ -1,13 +1,13 @@
-FROM maven:3.8.5-openjdk-17-slim AS build
+FROM eclipse-temurin:17-jdk as build
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
+COPY . .
+RUN ./gradlew build -x test
+# For Maven, use: RUN mvn package -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 WORKDIR /app
-RUN mkdir -p /app/logs /app/target && chmod 777 /app/logs /app/target
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
+# For Maven, use: COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
-CMD ["sh", "-c", "java -Dserver.port=8080 -Dserver.address=0.0.0.0 -Dlogging.file.name=/app/logs/spring.log -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
