@@ -33,7 +33,7 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 # Configuration pour Railway
-ENV PORT=8080
+ENV PORT=8000
 EXPOSE ${PORT}
 
 # Configuration JVM optimisée pour les conteneurs
